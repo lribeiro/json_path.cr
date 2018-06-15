@@ -17,7 +17,7 @@ class JsonPath
   property expression : String
 
   def initialize(expr : String)
-    @result = Array(JSON::Type).new
+    @result = Array(JSON::Any).new
     @expression = normalize(expr).sub(/^\$;/, "")
   end
 
@@ -33,7 +33,7 @@ class JsonPath
     ex
   end
 
-  def store(p, v : JSON::Type)
+  def store(p, v : JSON::Any)
     if p
       @result << v
     end
@@ -43,7 +43,7 @@ class JsonPath
   def get_node(context, key)
     return context unless key
 
-    case context
+    case context.raw
     when Array
       context[key.to_i]
     when Hash
@@ -53,16 +53,16 @@ class JsonPath
     end
   end
 
-  def trace(expr : String, val : JSON::Type , path : String)
+  def trace(expr : String, val : JSON::Any , path : String)
     if expr && expr.size > 0
       x = expr.split(";")
       loc = x.shift
       x = x.join(";")
 
       case
-      when val.is_a?(Hash) && val[loc]?
+      when val.raw.is_a?(Hash) && val[loc]?
         trace(x, val[loc], path + ";" + loc)
-      when val.is_a?(Array) && loc && loc.is_i? && val.size > loc.to_i
+      when val.raw.is_a?(Array) && loc && loc.is_i? && val.size > loc.to_i
         trace(x, val[loc.to_i], path + ";" + loc)
       when loc == "*"
         walk(loc, x, val, path) do |m, l, x, v, p|
@@ -105,20 +105,20 @@ class JsonPath
   end
 
   def walk(loc, expr, val, path)
-    case val
+    case val.raw
     when Array
-      val.each_with_index do |object, i|
+      val.as_a.each_with_index do |object, i|
         yield i, loc, expr, val, path
       end
     when Hash
-      val.each do |key, value|
+      val.as_h.each do |key, value|
         yield key, loc, expr, val, path
       end
     end
   end
 
   def slice(loc, expr, val, path)
-    if val.is_a?(Array)
+    if val.raw.is_a?(Array)
       len = val.size
       start = 0
       size = len
@@ -191,7 +191,7 @@ class JsonPath
 
   def jp_eval(expr : String, _v)
     if _v && _v.responds_to?(:size) &&  _v.size > 0
-      case _v
+      case _v.raw
       when Hash
         match = expr.match(/@.(\w+)\s*([<=>!~]*)\s*(\d*)/)
 
@@ -201,7 +201,7 @@ class JsonPath
         when $3.nil? || $3.size == 0
           _v[$1]?
         else
-          value = $1 == "length" ? _v.size : _v[$1].as(Number).to_i
+          value = $1 == "length" ? _v.size : (_v[$1].as_i? || _v[$1].as_f).to_i
           eval_exp(value, $2, $3.to_i)
         end
       when Array
@@ -228,7 +228,7 @@ class JsonPath
 
   def on(object)
     if @expression && object
-      trace(@expression, object.raw, "$")
+      trace(@expression, object, "$")
       return @result || false
     end
   end

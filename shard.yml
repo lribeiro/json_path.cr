@@ -1,5 +1,5 @@
 name: json_path
-version: 0.1.0
+version: 0.2.0
 
 authors:
  - name <ribeirl.luis@gmail.com>
@@ -17,3 +17,5 @@ description: |
 #     github: manastech/webmock.cr
 
 license: MIT
+
+crystal: >= 0.25.0
