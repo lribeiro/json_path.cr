@@ -1,21 +1,12 @@
 name: json_path
-version: 0.2.0
+version: 0.2.1
 
 authors:
- - name <ribeirl.luis@gmail.com>
+ - name <ribeiro.luis@gmail.com>
 
 description: |
   JsonPath implementation in crystal
 
-# dependencies:
-#   pg:
-#     github: will/crystal-pg
-#     version: "~> 0.5"
-
-# development_dependencies:
-#   webmock:
-#     github: manastech/webmock.cr
-
 license: MIT
 
-crystal: >= 0.25.0
+crystal: 0.26.1
