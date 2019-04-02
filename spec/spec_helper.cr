@@ -1,3 +1,4 @@
 require "spec"
-require "json_path"
+require "json"
+require "../src/json_path"
 

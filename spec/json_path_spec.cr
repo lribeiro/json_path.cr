@@ -1,6 +1,4 @@
 require "./spec_helper"
-require "json_path"
-require "json"
 
 def prepare
   json = <<-HEREDOC

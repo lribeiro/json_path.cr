@@ -1,4 +1,4 @@
-require "json_path/version"
+require "./json_path/version"
 
 class String
   @@is_int_regex = /\A[-+]?\d+\z/
