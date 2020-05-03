@@ -114,6 +114,8 @@ class JsonPath
       val.as_h.each do |key, value|
         yield key, loc, expr, val, path
       end
+    else
+      #raise "Expected Hash or Array not #{typeof(val.raw)} when processing #{expr}"
     end
   end
 
@@ -229,7 +231,7 @@ class JsonPath
   def on(object)
     if @expression && object
       trace(@expression, object, "$")
-      return @result || false
+      return @result || nil
     end
   end
 end
